@@ -39,16 +39,14 @@ ifneq "$(DOCTYPE)" "REC"
 		versionedName:=$(versionedName)-$(subst -,,$(DOCDATE))
 endif
 
-GENERATED_PNGS = $(addsuffix .png, $(VECTORFIGURES))
+GENERATED_PNGS = $(VECTORFIGURES:pdf=png)
 
 .SUFFIXES: .pdf .gif .tex .png
 .PHONY: biblio
 
-%.pdffig.png: %.pdffig
+%.png: %.pdf
 #	# simple ImageMagic -antialias didn't work too well
-	$(CONVERT) -density 300 $< temp-$@
-	$(CONVERT) temp-$@ -scale 25% $@
-	rm temp-$@
+	$(CONVERT) -density 300 -scale 25% $< $@
 
 $(DOCNAME).pdf: ivoatexmeta.tex $(SOURCES) $(FIGURES) $(VECTORFIGURES)
 	$(PDFLATEX) $(DOCNAME)
