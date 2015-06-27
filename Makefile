@@ -45,8 +45,9 @@ GENERATED_PNGS = $(VECTORFIGURES:pdf=png)
 .PHONY: biblio
 
 %.png: %.pdf
-#	# simple ImageMagic -antialias didn't work too well
+	# simple ImageMagic -antialias didn't work too well
 	$(CONVERT) -density 300 -scale 25% $< $@
+
 
 $(DOCNAME).pdf: ivoatexmeta.tex $(SOURCES) $(FIGURES) $(VECTORFIGURES)
 	$(PDFLATEX) $(DOCNAME)
@@ -62,7 +63,7 @@ clean:
 	rm -f $(DOCNAME).pdf $(DOCNAME).aux $(DOCNAME).log $(DOCNAME).toc texput.log
 	rm -f $(DOCNAME).html $(DOCNAME).xhtml
 	rm -f *.bbl *.blg *.out debug.html
-	rm -f *.pdffig.png
+	rm -f $(GENERATED_PNGS)
 
 ivoatexmeta.tex: Makefile
 	rm -f $@
