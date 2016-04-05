@@ -10,7 +10,6 @@
 \RequirePackage{doc}
 \RequirePackage{paralist}
 \RequirePackage{url}
-\RequirePackage{natbib}
 \RequirePackage[labelfont=it]{caption}
 \RequirePackage[T1]{fontenc}
 \RequirePackage[utf8]{inputenc}
@@ -25,7 +24,8 @@
 	urlcolor=linkcolor,
 	breaklinks=true]{hyperref}
 
-\bibliographystyle{agsm}
+\RequirePackage{natbib}
+\bibliographystyle{ivoatex/ivoa}
 
 \renewcommand{\topfraction}{0.9}
 \renewcommand{\bottomfraction}{0.7}
@@ -91,6 +91,20 @@
 		\setlength{\listparindent}{0pt}
 		\setlength{\itemsep}{0pt}
 		\let\makelabel\bigdescriptionlabel}
+		\let\term\item
+	}{%
+		\end{list}}
+
+\newcommand*\longtermslabel[1]{%
+	\parbox[b]{\labelwidth}{\makebox[0pt][l]{#1}\\\mbox{}}}
+\newenvironment{longtermsdescription}%
+	{\begin{list}{}{%
+		\setlength{\leftmargin}{4em}
+		\setlength{\labelwidth}{4em}
+		\setlength{\labelsep}{0pt}
+		\setlength{\listparindent}{0pt}
+		\setlength{\itemsep}{3pt}
+		\let\makelabel\longtermslabel}
 		\let\term\item
 	}{%
 		\end{list}}
@@ -298,6 +312,11 @@
   \end{table}
   }%
 
+
+\newenvironment{inlinetable}{\vskip 1ex\vfil\penalty8000\vfilneg%
+    \hbox to\hsize\bgroup\hss}
+  {\hss\egroup\vspace{8pt}}
+
 % customcss only relevant for tth output, not LaTeX
 \newcommand{\customcss}[1]{\relax}
 
@@ -309,6 +328,11 @@
 \newcommand{\ivoatex}{\mbox{\textsc{Ivoa}\TeX}}
 
 \chardef\dquote'042
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Changing LaTeX defaults
+
+\renewcommand*\descriptionlabel[1]
+	{\hspace{\labelsep}\itshape #1}
 
 \makeatother
 

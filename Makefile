@@ -59,10 +59,23 @@ forcetex:
 
 archive: $(DOC).pdf $(DOC).html $(UPLOAD).zip $(ARCHIVE).zip
 
+arxiv-upload: $(SOURCES) biblio $(FIGURES) $(VECTORFIGURES) ivoatexmeta.tex
+	mkdir -p stuff-for-arxiv/ivoatex
+	cp ivoatex/ivoa.cls ivoatex/tthdefs.tex stuff-for-arxiv
+	cp ivoatex/IVOA.jpg stuff-for-arxiv/ivoatex
+	# HACK: 2015-10-05 MD: arXiv produces an hyperref option clash without
+	# this
+	echo nohypertex >> stuff-for-arxiv/00README.XXX
+	cp $(SOURCES) $(DOCNAME).bbl $(FIGURES) $(VECTORFIGURES) \
+		ivoatexmeta.tex  stuff-for-arxiv
+	tar -cvzf arxiv-upload.tar.gz -C stuff-for-arxiv .
+	rm -r stuff-for-arxiv
+
 clean:
 	rm -f $(DOCNAME).pdf $(DOCNAME).aux $(DOCNAME).log $(DOCNAME).toc texput.log ivoatexmeta.tex
 	rm -f $(DOCNAME).html $(DOCNAME).xhtml
 	rm -f *.bbl *.blg *.out debug.html
+	rm -f arxiv-upload.tar.gz
 	rm -f $(GENERATED_PNGS)
 
 ivoatexmeta.tex: Makefile
@@ -95,6 +108,13 @@ $(DOCNAME).bbl: $(DOCNAME).tex ivoatex/ivoabib.bib ivoatexmeta.tex
 # bibliography-relevant changes, they run make biblio manually.
 biblio: $(DOCNAME).bbl
 
+# generate may modify DOCNAME.tex controlled by arbitrary external binaries.
+# It is impossible to model these dependencies (here), and anyway
+# I feel something like that shouldn't run automatically.
+# Also, it needs python installed, which may not be available on all
+# installations.
+generate:
+	python ivoatex/update_generated.py $(DOCNAME).tex
 
 package: $(DOCNAME).html $(DOCNAME).pdf \
 		$(GENERATED_PNGS)	$(FIGURES) $(AUX_FILES)
@@ -128,8 +148,9 @@ $(TTH): ivoatex/tth_C/tth.c
 
 IVOATEX_FILES = archdiag.png fromivoadoc.xslt Makefile COPYING \
 	ivoabib.bib Makefile.template tthdefs.tex document.template \
-	ivoa.cls README  tth-ivoa.xslt IVOA.jpg \
-	svn-ignore.txt tthntbib.sty 
+	ivoa.cls README  tth-ivoa.xslt IVOA.jpg docrepo.bib\
+	svn-ignore.txt tthntbib.sty update_generated.py schemadoc.xslt \
+	ivoa.bst
 TTH_FILES= tth_C/CHANGES tth_C/latex2gif tth_C/ps2gif tth_C/tth.c \
 	tth_C/tth_manual.html tth_C/INSTALL tth_C/license.txt tth_C/ps2png \
 	tth_C/tth.1 tth_C/tth.gif
@@ -152,3 +173,7 @@ ivoatex-installdist: $(IVOATEX_ARCHIVE)
 	@echo "This target will only work for Markus"
 	scp $(IVOATEX_ARCHIVE) alnilam:/var/www/soft/ivoatex/
 	ssh alnilam "cd /var/www/soft/ivoatex/; ln -sf $(IVOATEX_ARCHIVE) ivoatex-latest.tar.gz"
+
+# re-gets the ivoa records from ADS
+docrepo.bib:
+	curl -o "$@" "http://ads.ari.uni-heidelberg.de/cgi-bin/nph-abs_connect?db_key=ALL&warnings=YES&version=1&bibcode=%3F%3F%3F%3Fivoa.spec&nr_to_return=1000&start_nr=1&data_type=BIBTEX&use_text=YES"
