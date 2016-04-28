@@ -49,7 +49,7 @@ GENERATED_PNGS = $(VECTORFIGURES:pdf=png)
 	$(CONVERT) -density 300 -scale 25% $< $@
 
 
-$(DOCNAME).pdf: ivoatexmeta.tex $(SOURCES) $(FIGURES) $(VECTORFIGURES)
+$(DOCNAME).pdf: ivoatexmeta.tex $(DOCNAME).bbl $(SOURCES) $(FIGURES) $(VECTORFIGURES)
 	$(PDFLATEX) $(DOCNAME)
 
 
