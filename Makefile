@@ -10,7 +10,7 @@
 #  You should *not* need to change anything here while authoring documents.
 #  All customisation should happen in the user Makefile
 
-IVOATEX_VERSION = 0.4
+IVOATEX_VERSION = 1.0
 
 CSS_HREF = http://www.ivoa.net/misc/ivoa_doc.css
 TTH = ivoatex/tth_C/tth
@@ -42,7 +42,7 @@ endif
 GENERATED_PNGS = $(VECTORFIGURES:pdf=png)
 
 .SUFFIXES: .pdf .gif .tex .png
-.PHONY: biblio
+.PHONY: biblio docrepo.bib
 
 %.png: %.pdf
 	# simple ImageMagic -antialias didn't work too well
@@ -98,9 +98,9 @@ $(DOCNAME).html: $(DOCNAME).pdf ivoatex/tth-ivoa.xslt $(TTH) \
 
 
 $(DOCNAME).bbl: $(DOCNAME).tex ivoatex/ivoabib.bib ivoatexmeta.tex
-	$(PDFLATEX) $(DOCNAME).tex
+	-$(PDFLATEX) -interaction scrollmode $(DOCNAME).tex
 	bibtex $(DOCNAME).aux
-	$(PDFLATEX) $(DOCNAME).tex 2>&1 >/dev/null
+	$(PDFLATEX) -interaction batchmode $(DOCNAME).tex 2>&1 >/dev/null
 	touch $(DOCNAME).tex
 
 # We don't let the pdf depend on .bbl, as we don't want to run BibTeX

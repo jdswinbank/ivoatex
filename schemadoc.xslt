@@ -33,6 +33,9 @@ Copyright 2015, The GAVO project
   	<xsl:text>}}}</xsl:text>
   </xsl:template>
 
+	<xsl:template match="vm:dcterm"/> <!-- we don't have a good place for these
+		yet -->
+	
   <xsl:template match="xs:complexType[xs:simpleContent]" mode="content"/>
 
   <xsl:template match="xs:complexType" mode="content">
@@ -68,15 +71,6 @@ Copyright 2015, The GAVO project
     <xsl:param name="item" select="1"/>
     <xsl:variable name="type" select="@type"/>
     <xsl:choose>
-      <xsl:when test="$item &lt; 2 and xs:annotation/xs:appinfo/vm:dcterm">
-        <xsl:apply-templates select="." mode="content.rmname">
-          <xsl:with-param name="row" select="$row"/>
-        </xsl:apply-templates>
-        <xsl:apply-templates select="." mode="nextContentItem">
-          <xsl:with-param name="row" select="$row+1"/>
-          <xsl:with-param name="item" select="2"/>
-        </xsl:apply-templates>
-      </xsl:when>
       <xsl:when test="$item &lt; 3">
         <xsl:apply-templates select="." mode="content.type">
           <xsl:with-param name="row" select="$row"/>
@@ -122,22 +116,6 @@ Copyright 2015, The GAVO project
         </xsl:apply-templates>
       </xsl:when>
     </xsl:choose>
-  </xsl:template>
-
-  <xsl:template match="xs:element" mode="content.rmname">
-    <xsl:param name="row" select="1"/>
-    <rmname>
-      <xsl:attribute namespace="" name="row">
-        <xsl:value-of select="$row"/>
-      </xsl:attribute>
-      <xsl:for-each select="xs:annotation/xs:appinfo/vm:dcterm">
-        <xsl:if test="position()!=1">
-          <xsl:text>, </xsl:text>
-        </xsl:if>
-        <xsl:value-of select="."/>
-      </xsl:for-each>
-    </rmname>
-    <xsl:text>&#10;</xsl:text>
   </xsl:template>
 
   <xsl:template match="xs:element|xs:attribute" mode="content.type">
@@ -254,20 +232,28 @@ Copyright 2015, The GAVO project
   <xsl:template match="xs:element|xs:attribute" mode="content.allowedValues">
     <xsl:param name="row" select="1"/>
     <xsl:param name="type" select="@type"/>
-   	<xsl:text>\item[Allowed Values]\hfil\begin{longtermsdescription}</xsl:text>
-    <xsl:attribute namespace="" name="row">
-      <xsl:value-of select="$row"/>
-    </xsl:attribute>
-    <xsl:text>&#10;</xsl:text>
-    <xsl:choose>
-      <xsl:when test="$type">
-        <xsl:apply-templates select="/xs:schema/xs:simpleType[@name=substring-after($type,':')]/xs:restriction/xs:enumeration" mode="controlledVocab"/>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:apply-templates select="xs:simpleType/xs:restriction/xs:enumeration" mode="controlledVocab"/>
-      </xsl:otherwise>
-    </xsl:choose>
-    <xsl:text>\end{longtermsdescription}&#10;</xsl:text>
+   	<xsl:attribute namespace="" name="row">
+     	<xsl:value-of select="$row"/>
+   	</xsl:attribute>
+   	<xsl:text>&#10;</xsl:text>
+   	<xsl:choose>
+     	<xsl:when test="$type">
+     		<xsl:if test="/xs:schema/xs:simpleType[@name=substring-after($type,':')]/xs:restriction/xs:enumeration">
+ 					<xsl:text>\item[Allowed Values]\hfil&#10;\begin{longtermsdescription}&#10;</xsl:text>
+       			<xsl:apply-templates select="/xs:schema/xs:simpleType[@name=substring-after($type,':')]/xs:restriction/xs:enumeration" mode="controlledVocab"/>
+   				<xsl:text>\end{longtermsdescription}&#10;</xsl:text>
+       	</xsl:if>
+     	</xsl:when>
+     	<xsl:otherwise>
+   			<xsl:if test="descendant::xs:enumeration">
+ 					<xsl:text>\item[Allowed Values]\hfil&#10;\begin{longtermsdescription}</xsl:text>
+       		<xsl:apply-templates 
+       			select="descendant::xs:enumeration" 
+       			mode="controlledVocab"/>
+   				<xsl:text>\end{longtermsdescription}&#10;</xsl:text>
+       	</xsl:if>
+     	</xsl:otherwise>
+   	</xsl:choose>
   </xsl:template>
 
   <xsl:template match="xs:element|xs:attribute" mode="content.comment">
@@ -641,6 +627,19 @@ Copyright 2015, The GAVO project
       	<xsl:apply-templates select="./xs:annotation/xs:documentation"
       		mode="typedesc"/>
       </xsl:if>
+			
+			<!-- oh my. refactor content.allowedValues stuff above to let us
+			re-use the mess there here. -->
+     	<xsl:if test="xs:restriction/xs:enumeration">
+       	<xsl:text>\vspace{2ex}\noindent\textbf{\xmlel{</xsl:text>
+      	<xsl:value-of select="concat(/xs:schema/xs:annotation/xs:appinfo/vm:targetPrefix,':',@name)"/>
+      	<xsl:text>}</xsl:text>
+      	<xsl:text> Type Allowed Values}&#10;&#10;\begin{longtermsdescription}</xsl:text>
+       	<xsl:apply-templates 
+       		select="descendant::xs:enumeration" 
+       		mode="controlledVocab"/>
+   			<xsl:text>\end{longtermsdescription}&#10;</xsl:text>
+     	</xsl:if>
 
       <xsl:text>\vspace{1ex}\noindent\textbf{\xmlel{</xsl:text>
       <xsl:value-of select="concat(/xs:schema/xs:annotation/xs:appinfo/vm:targetPrefix,':',@name)"/>
