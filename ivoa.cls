@@ -207,9 +207,11 @@
 			{IVOA Proposed Recommendation}
 		{\ifthenelse{\equal{#1}{REC}}
 			{IVOA Recommendation}
-		{\ifthenelse{\equal{#1}{DERR}}
-			{Draft Erratum}
-		{UNKNOWN DOCUMENT (fix DOCTYPE)}}}}}}
+		{\ifthenelse{\equal{#1}{PEN}}
+			{Proposed Endorsed Note}
+		{\ifthenelse{\equal{#1}{EN}}
+			{Endorsed Note}
+		{UNKNOWN DOCUMENT (fix DOCTYPE)}}}}}}}
 
 \newcommand\docstatusDeclaration[1]
 	{\ifthenelse{\equal{#1}{NOTE}}
@@ -232,12 +234,19 @@
       only as a recommended standard that is under review and
       which may be changed before it is accepted as a full
       Recommendation.}
- 	{\ifthenelse{\equal{#1}{DERR}}
- 		{This is a draft for an erratum to an IVOA recommendation made 
- 			available for public review.  Interested parties are invited
- 			to evaluate the erratum's validity and impact, but at this stage
- 			the erratum does not yet change the normative content of the
- 			recommendation.}
+ 	{\ifthenelse{\equal{#1}{PEN}}
+ 		{This is an IVOA Proposed Endorsed Note for review by IVOA
+      members and other interested parties. It is appropriate to
+      reference this document only as a Proposed Endorsed Note that
+      is under review and may change before it is endorsed or may  
+      not be endorsed. 
+ 		}
+ 	{\ifthenelse{\equal{#1}{EN}}
+ 		{This document is an IVOA Endorsed Note. It has been reviewed  and endorsed
+ 			by the IVOA Technical Coordination Group as a stable, citable document 
+ 			which constitutes valuable information for the IVOA community and
+ 			beyond.
+ 		}
 	{\ifthenelse{\equal{#1}{REC}}
 		{This document has been reviewed by IVOA Members and other
      interested parties, and has been endorsed by the IVOA
@@ -248,7 +257,7 @@
      attention to the specification and to promote its
      widespread deployment. This enhances the functionality and
      interoperability inside the Astronomical Community.}
-		{UNKNOWN DOCUMENT (fix DOCTYPE)}}}}}\par
+		{UNKNOWN DOCUMENT (fix DOCTYPE)}}}}}}\par
 	A list of current IVOA Recommendations and other technical documents
 	can be found at \href{http://www.ivoa.net/Documents/
 	}{http://www.ivoa.net/Documents/}.}

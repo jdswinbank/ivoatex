@@ -24,7 +24,7 @@ ARCHIVE_FILES = $(DOCNAME).tex $(DOCNAME).pdf $(DOCNAME).html $(FIGURES)
 #     ghostscript (if you plan on postscript/pdf figures)
 #     zip
 #  All most likely present on, e.g., a linux disribution.
-#  Could use substitites for some of these if they are not available.
+#  Could use substitutes for some of these if they are not available.
 XSLTPROC = xsltproc
 XMLLINT = xmllint -noout
 PDFLATEX = pdflatex
@@ -91,6 +91,7 @@ ivoatexmeta.tex: Makefile
 $(DOCNAME).html: $(DOCNAME).pdf ivoatex/tth-ivoa.xslt $(TTH) \
 		$(GENERATED_PNGS)
 	$(TTH) -w2 -e2 -u2 -pivoatex -L$(DOCNAME) <$(DOCNAME).tex \
+		| tee debug.html \
 		| $(XSLTPROC) --html \
                          --stringparam CSS_HREF $(CSS_HREF) \
                       ivoatex/tth-ivoa.xslt - \
@@ -138,6 +139,10 @@ endif
 	rm -rf -- $(versionedName)
 
 
+upload: package
+	python ivoatex/submission.py $(versionedName).zip
+
+
 #  Build TtH from source.  See http://hutchinson.belmont.ma.us/tth/.
 #  TtH source seems to be highly portable, so compilation should be easy
 #  as long as you have a C compiler.
@@ -176,4 +181,4 @@ ivoatex-installdist: $(IVOATEX_ARCHIVE)
 
 # re-gets the ivoa records from ADS
 docrepo.bib:
-	curl -o "$@" "http://ads.ari.uni-heidelberg.de/cgi-bin/nph-abs_connect?db_key=ALL&warnings=YES&version=1&bibcode=%3F%3F%3F%3Fivoa.spec&nr_to_return=1000&start_nr=1&data_type=BIBTEX&use_text=YES"
+	curl -o "$@" "http://adsabs.harvard.edu/cgi-bin/nph-abs_connect?db_key=ALL&warnings=YES&version=1&bibcode=%3F%3F%3F%3Fivoa.spec&nr_to_return=1000&start_nr=1&data_type=BIBTEX&use_text=YES"
