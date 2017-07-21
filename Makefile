@@ -120,16 +120,16 @@ generate:
 package: $(DOCNAME).tex $(DOCNAME).html $(DOCNAME).pdf \
 		$(GENERATED_PNGS)	$(FIGURES) $(AUX_FILES)
 	rm -rf -- $(versionedName)
-	mkdir $(versionedName)
+	mkdir -p $(versionedName)/figures
 	cp $(DOCNAME).tex $(versionedName)/$(versionedName).tex
 	cp $(DOCNAME).html $(versionedName)/$(versionedName).html
 	cp $(DOCNAME).pdf $(versionedName)/$(versionedName).pdf
 
 ifneq ($(strip $(FIGURES)),)
-	cp $(FIGURES) $(versionedName)
+	cp $(FIGURES) $(versionedName)/figures
 endif
 ifneq ($(strip $(GENERATED_PNGS)),)
-	cp $(GENERATED_PNGS) $(versionedName)
+	cp $(GENERATED_PNGS) $(versionedName)/figures
 endif
 ifneq ($(strip $(AUX_FILES)),)
 	cp -r $(AUX_FILES) $(versionedName)
